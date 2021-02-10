@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 # JB 02/07/2021 - Configparser introduced to scrape out some hardcode and allow removal of sensitive passwords
 
-WEBSCRAPER_LIMIT = 2000
+WEBSCRAPER_LIMIT = 20000
 
 config = configparser.ConfigParser()
 config.read('./config/config.ini')

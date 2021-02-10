@@ -29,29 +29,36 @@ tick_df.dropna(axis=1)
 dataColumns = ["Name", "Industry", "Previous Close", "5d Low", "5d High", "1d Change (%)", "5d Change (%)", "1mo Change (%)"]
 
 def getTickerInfo(ticker):
-    
-  # Standard Data
-  info = yf.Ticker(ticker).info
-  tickerName = info["longName"]
-  tickerIndustry = info["industry"]
+  try:
+    # Standard Data
+    info = yf.Ticker(ticker).info
+    tickerName = info["longName"]
+    if "industry" in info:
+      tickerIndustry = info["industry"]
+    else:
+      tickerIndustry = "Unkown"
 
-  # previous Day close
-  tickerClose = yf.Ticker(ticker).history(period="1d")["Close"].to_list()[-1]
+    # previous Day close
+    tickerClose = yf.Ticker(ticker).history(period="1d")["Close"].to_list()[-1]
 
-  # Highs and Lows
-  highLow = yf.Ticker(ticker).history(period="5d")
-  Low5d = min(highLow["Low"].to_list())
-  High5d = max(highLow["High"].to_list())
+    # Highs and Lows
+    highLow = yf.Ticker(ticker).history(period="5d")
+    Low5d = min(highLow["Low"].to_list())
+    High5d = max(highLow["High"].to_list())
 
-  # Changes
-  change1d = get_change(ticker)
-  change5d = get_change(ticker, "5d")
-  change1mo = get_change(ticker, "1mo")
+    # Changes
+    change1d = get_change(ticker)
+    change5d = get_change(ticker, "5d")
+    change1mo = get_change(ticker, "1mo")
 
-  return pd.Series([tickerName, tickerIndustry, tickerClose, Low5d, High5d, change1d, change5d, change1mo])
+    return pd.Series([tickerName, tickerIndustry, tickerClose, Low5d, High5d, change1d, change5d, change1mo])
+  except Exception as e:
+    print(ticker)
+    print(e)
+    return pd.Series(["tickerName", "tickerIndustry", 0, 0, 0, 0, 0, 0])
 
-
-df_best = tick_df.head(BEST_N)
+df_best = tick_df #.head(BEST_N)
+#print(df_best)
 df_best[dataColumns] = df_best.Ticker.apply(getTickerInfo)
 
 
